@@ -28,6 +28,7 @@ app.post("/api/jobs", JobSearchController.search);
 //app.post("/api/meetups", meetupsController.create);
 //app.get("/api/meetups", meetupsController.list);
 
-app.listen(3000, function(){
-  console.log("I'm listening...");
+var port = process.env.PORT || 3000;
+app.listen(port, function(){
+  console.log("I'm listening on port " + port + "...");
 });
