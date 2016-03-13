@@ -1,8 +1,7 @@
 app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", function($scope, $resource, $http){
 
   // API with our server to send search records.
-  var JobSearch = $resource("/api/jobs");
-  var self = this;
+  var JobSearch = $resource("/api/jobsearch");
 
   $scope.jobResults = [
     { "name": "Super awesome job" },
@@ -16,12 +15,11 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
     var search = new JobSearch();
     search.searchPhrase = $scope.searchPhrase;
     search.zipcode = $scope.zipcode;
-    search.$save(function(result){
-      self.userIp = result.host;
-      self.userAgent = result.userAgent;
 
-      console.log(self.userIp);
-      console.log(self.userAgent);
+    search.$save(function(result){
+      console.log("Save result: ");
+      console.log(result.ipAddress);
+      console.log(result.userAgent);
 
       // MUST HAVE HTTP REQUEST HERE TO ENSURE VALID USERIP AND USERAGENT!
     });
@@ -29,7 +27,7 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
     // Search for jobs and display on the page.
     $http({
       method: "GET",
-      url: "http://api.indeed.com/ads/apisearch?publisher=2878037053725137&v=2&format=json&userip=192.168.1.3&useragent=Mozilla/%2F4.0%28Firefox%29",
+      url: "http://api.indeed.com/ads/apisearch?publisher=2878037053725137&v=2&format=json&userip=localhost&useragent=Mozilla/%2F4.0%28Firefox%29",
       headers: {
         "Content-Type": "application/javascript;charset=UTF-8"
       }
@@ -48,14 +46,9 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
       }
       */
     }).then(function(response) {
-        console.log("success");
-        console.log(response);
-        console.log(response.data);
+        console.log("success api call");
       }, function(response) {
-        console.log("error");
-        console.log(response);
-        console.log(response.message);
-        console.log(response.filename);
+        console.log("error api call");
     });
   };
 
