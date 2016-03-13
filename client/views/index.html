@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="mbsjobs">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UI-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" contnet="">
+  </head>
+  <body>
+
+    <h1>Welcome to MBS Jobs!</h1>
+    <div ng-controller="JobSearchController">
+
+      <!-- Jobs search form -->
+      <form ng-submit="searchJobs()">
+        <input type="text" placeholder="Search phrase" maxlength="50" ng-model="searchPhrase"></input>
+        <input type="text" placeholder="Zipcode" maxlength="5" ng-model="zipcode"></input>
+        <button type="submit">Search</button>
+      </form>
+
+      <!-- List of resulting jobs -->
+      <ul>
+        <li ng-repeat="job in jobResults">
+          {{ job.name }}
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <span id=indeed_at><a href="http://www.indeed.com/">jobs</a> by <a href="http://www.indeed.com/" title="Job
+Search"><img src="http://www.indeed.com/p/jobsearch.gif" style="border: 0; vertical-align: middle;" alt="Indeed job
+search"></a></span>
+  </div>
+
+    <script type="text/javascript" src="/node_modules/angular/angular.js"></script>
+    <script src="/node_modules/angular-resource/angular-resource.js"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/js/controllers/JobSearchController.js"></script>
+
+  </body>
+</html>
