@@ -3,13 +3,13 @@ var express = require("express"),
 
     // Extra tools
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose"),
+    //mongoose = require("mongoose"),
 
     // Server side controllers
     JobSearchController = require("./server/controllers/JobSearchController");
 
 // Initialize db
-mongoose.connect("mongodb://localhost:27017/mean-demo");
+//mongoose.connect("mongodb://localhost:27017/mean-demo");
 
 app.get("/", function(req, res){
   res.sendfile(__dirname + "/client/views/index.html");
