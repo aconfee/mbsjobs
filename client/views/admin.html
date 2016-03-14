@@ -25,8 +25,11 @@
           <p><b>BROWSER:</b> {{ record.userAgent }}</p>
         </li>
       </ul>
-      <p ng-click="previousRecords()"><u>BACK</u></p>
-      <p ng-click="nextRecords()"><u>NEXT</u></p>
+      <p>
+        <span ng-click="previousRecords()"><u>BACK</u></span>
+        PAGE {{ recordsPageNumber }}
+        <span ng-click="nextRecords()"><u>NEXT</u></span>
+      </p>
     </div>
 
     <script type="text/javascript" src="/node_modules/angular/angular.js"></script>

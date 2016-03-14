@@ -1,9 +1,23 @@
 app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", function($scope, $resource, $http){
 
+  // 'Private' controller variables.
+  var self = this;
+  self.maxRecords = 10;
+  self.maxResults = 10;
+  self.userIp = "";
+  self.userAgent = "";
+
+  // Binding variables.
+  $scope.searchMessage = "Please search to display jobs.";
+  $scope.recordsPageNumber = 0;
+  $scope.resultsPageNumber = 0;
+  $scope.searchRecords = [];
+  $scope.jobResults = [];
+  $scope.zipcode; // used by form
+  $scope.searchPhrase; // used by form
+
   // API with our server to send search records.
   var JobSearch = $resource("/api/jobsearch");
-  $scope.searchMessage = "Please search to display jobs.";
-  $scope.recordsPage = 0;
 
   var emptyMockResult = {
     "version" : 2,
@@ -234,88 +248,151 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
       ]
     };
 
-    // Post a job search
-    $scope.searchJobs = function(){
-      // Send the job search data to the server to store in our records.
-      var search = new JobSearch();
-      search.searchPhrase = $scope.searchPhrase;
-      search.zipcode = $scope.zipcode;
+  ///
+  /// Post a job search.
+  ///
+  $scope.searchJobs = function(){
+    if($scope.searchPhrase === undefined || $scope.zipcode === undefined){
+      $scope.searchMessage = "Please enter a search phrase and location.";
+      return;
+    }
 
-      search.$save(function(result){
-        // Search for the list of resulting jobs.
+    // Save the search data.
+    var search = new JobSearch();
+    search.searchPhrase = $scope.searchPhrase;
+    search.zipcode = $scope.zipcode;
+    search.$save(function(result){
+      // Save ip and agent detected and returned from server.
+      self.userIp = result.ipAddress;
+      self.userAgent = result.userAgent;
 
-        // TODO: ADD TO HTTP SUCCESS CALLBACK!
-        if(mockresult.results.length === 0){
-          $scope.searchMessage = "Sorry. No results found.";
-          return;
-        }
+      /// TEMPORARY HACK!!!!
+      $scope.jobResults = mockresult.results;
+      ///
 
-        $scope.searchMessage = mockresult.totalResults + " results found.";
-        $scope.jobResults = mockresult.results;
-
-
-        $http({
-          method: "GET",
-          url: "http://api.indeed.com/ads/apisearch",
-          params: {
-            publisher: "2878037053725137",
-            v: "2",
-            format: "json",
-            userip: result.ipAddress,
-            useragent: result.userAgent,
-            l: $scope.zipcode,
-            q: $scope.searchPhrase,
-            chnl: "FJR"
-          },
-          headers: {
-            "Content-Type": "application/javascript;charset=UTF-8"
+      // Query Indeed for jobs.
+      self.queryJobs(
+        function(response){ // Success
+          if(response.results.length === 0){
+            $scope.searchMessage = "Sorry. No results found.";
+            return;
           }
-        }).then(function(response) {
-            console.log("success api call");
-          }, function(response) {
-            console.log("error api call");
-        });
-      });
-    };
 
-    // Get the saved job search records.
-    $scope.getSearchRecords = function(){
+          $scope.searchMessage = response.totalResults + " results found.";
+          $scope.jobResults = response.results;
+        },
+        function(response){ // Error
+          console.log("ERROR querying jobs in searchJobs.");
+      }); // query jobs
+    }); // save search data
+  }; // search jobs
+
+  ///
+  /// Get the saved job search records.
+  ///
+  $scope.getSearchRecords = function(){
+    $http({
+      method: "GET",
+      url: "/api/jobsearch",
+      params: {
+        start: $scope.recordsPageNumber * self.maxRecords,
+        limit: self.maxRecords
+      }
+    }).then(
+      function(response) {
+        $scope.searchRecords = response.data;
+      }, function(response) {
+        console.log("ERROR getting search records.");
+    });
+  };
+
+  ///
+  /// Modify the page we're on and search for records.
+  ///
+  $scope.previousRecords = function(){
+    if($scope.recordsPageNumber === 0) return;
+
+    $scope.recordsPageNumber -= 1;
+    $scope.getSearchRecords();
+  }
+
+  $scope.nextRecords = function(){
+    if($scope.searchRecords.length != self.maxRecords) return;
+
+    $scope.recordsPageNumber += 1;
+    $scope.getSearchRecords();
+  }
+
+  ///
+  /// Modify the page we're on and search for jobs.
+  ///
+  $scope.previousResults = function(){
+    if($scope.resultsPageNumber === 0) return;
+
+    $scope.resultsPageNumber -= 1;
+
+    // Query Indeed for jobs without saving the search result.
+    self.queryJobs(
+      function(response){ // Success
+        $scope.jobResults = response.results;
+      },
+      function(response){ // Error
+        console.log("ERROR querying jobs in previous results.");
+    }); // query jobs
+  }
+
+  $scope.nextResults = function(){
+    if($scope.jobResults.length != self.maxResults) return;
+
+    $scope.resultsPageNumber += 1;
+
+    // Query Indeed for jobs without saving the search result.
+    self.queryJobs(
+      function(response){ // Success
+        $scope.jobResults = response.results;
+      },
+      function(response){ // Error
+        console.log("ERROR querying jobs in next results.");
+    }); // query jobs
+  }
+
+    ///
+    /// Query Indeed jobs API.
+    ///
+    self.queryJobs = function(successCb, errorCb){
+      if(self.userIp === "" ||
+          self.userAgent === "" ||
+          $scope.zipcode === undefined ||
+          $scope.searchPhrase === undefined)
+      {
+        console.log("Bad parameters, cannot query jobs.");
+        return;
+      }
+
       $http({
         method: "GET",
-        url: "/api/jobsearch",
+        url: "http://api.indeed.com/ads/apisearch",
         params: {
-          page: $scope.recordsPage
+          publisher: "2878037053725137",
+          v: "2",
+          format: "json",
+          userip: self.userIp,
+          useragent: self.userAgent,
+          l: $scope.zipcode,
+          q: $scope.searchPhrase,
+          chnl: "FJR",
+          limit: self.maxResults,
+          start: $scope.resultsPageNumber * self.maxResults
+        },
+        headers: {
+          "Content-Type": "application/javascript;charset=UTF-8"
         }
-      }).then(function(response) {
-          console.log("queried search records http");
-          console.log(response);
-          console.log(response.data);
-          $scope.searchRecords = response.data;
-        }, function(response) {
-          console.log("error api call");
-          console.log(response);
+      }).then(
+        function(response) {
+          successCb(response);
+        },
+        function(response) {
+          errorCb(response);
       });
-
-      /*
-      JobSearch.get({page: $scope.recordsPage}, {isArray: true}, function(results){
-        console.log("queried search records");
-        console.log(results);
-        $scope.searchRecords = results;
-      });
-      */
-    };
-
-    $scope.previousRecords = function(){
-      if($scope.recordsPage === 0) return;
-
-      $scope.recordsPage -= 1;
-      $scope.getSearchRecords();
-    }
-
-    $scope.nextRecords = function(){
-      if($scope.searchRecords.length != 5) return;
-
-      $scope.recordsPage += 1;
-      $scope.getSearchRecords();
-    }
-}]);
+    }; // query jobs
+}]); // controller

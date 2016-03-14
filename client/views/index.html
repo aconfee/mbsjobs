@@ -5,6 +5,9 @@
     <meta http-equiv="X-UI-Compatible" content="IE=edge">
     <title></title>
     <meta name="description" contnet="">
+
+    <!-- Indeed click tracking -->
+    <script type="text/javascript" src="http://www.indeed.com/ads/apiresults.js"></script>
   </head>
   <body>
 
@@ -29,6 +32,11 @@
           <p>{{ job.formattedRelativeTime }}</p>
         </li>
       </ul>
+      <p>
+        <span ng-click="previousResults()"><u>BACK</u></span>
+        PAGE {{ resultsPageNumber }} 
+        <span ng-click="nextResults()"><u>NEXT</u></span>
+      </p>
     </div>
 
     <div>
