@@ -10,14 +10,18 @@ var express = require("express"),
 
 // Initialize db
 mongoose.connect("mongodb://aconfee:password@ds011419.mlab.com:11419/mbsjobs");
-//mongoose.connect("mongodb://localhost:27017/mean-demo");
 
+// Define middleware
+app.use(bodyParser());
+
+// Define page routes
 app.get("/", function(req, res){
   res.sendfile(__dirname + "/client/views/index.html");
 });
 
-// Define middleware
-app.use(bodyParser());
+app.get("/admin", function(req, res){
+  res.sendfile(__dirname + "/client/views/admin.html");
+});
 
 // Define public static content to serve.
 app.use("/js", express.static(__dirname + "/client/js"));
@@ -25,7 +29,7 @@ app.use("/node_modules", express.static(__dirname + "/node_modules"));
 
 // REST API
 app.post("/api/jobsearch", JobSearchController.search);
-app.get("/api/jobsearch", JobSearchController.searchList);
+app.get("/api/jobsearch", JobSearchController.searchRecords);
 
 var port = process.env.PORT || 3000;
 app.listen(port, function(){

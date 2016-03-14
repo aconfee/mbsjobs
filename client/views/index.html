@@ -19,9 +19,14 @@
       </form>
 
       <!-- List of resulting jobs -->
+      <p>{{ searchMessage }}</p>
       <ul>
         <li ng-repeat="job in jobResults">
-          {{ job.name }}
+          <h3><a ng-href="{{job.url}}" target="_blank">{{ job.jobtitle }}</a></h3>
+          <p>{{ job.company }}</p>
+          <p>{{ job.snippet }}</p>
+          <p>{{ job.formattedLocationFull }}</p>
+          <p>{{ job.formattedRelativeTime }}</p>
         </li>
       </ul>
     </div>
