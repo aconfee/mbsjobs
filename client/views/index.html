@@ -26,29 +26,38 @@
       <ul>
         <li ng-repeat="job in jobResults">
           <h3><a ng-href="{{job.url}}" target="_blank">{{ job.jobtitle }}</a></h3>
+          <p>{{ currentMousedownCode }}</p>
           <p>{{ job.company }}</p>
-          <p>{{ job.snippet }}</p>
+          <p>{{ job.snippet }}></p>
           <p>{{ job.formattedLocationFull }}</p>
           <p>{{ job.formattedRelativeTime }}</p>
         </li>
       </ul>
       <p>
         <span ng-click="previousResults()"><u>BACK</u></span>
-        PAGE {{ resultsPageNumber }} 
+        PAGE {{ resultsPageNumber }}
         <span ng-click="nextResults()"><u>NEXT</u></span>
       </p>
     </div>
 
     <div>
-      <span id=indeed_at><a href="http://www.indeed.com/">jobs</a> by <a href="http://www.indeed.com/" title="Job
+    <span id=indeed_at><a href="http://www.indeed.com/">jobs</a> by <a href="http://www.indeed.com/" title="Job
 Search"><img src="https://www.indeed.com/p/jobsearch.gif" style="border: 0; vertical-align: middle;" alt="Indeed job
 search"></a></span>
   </div>
 
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script type="text/javascript" src="/node_modules/angular/angular.js"></script>
     <script src="/node_modules/angular-resource/angular-resource.js"></script>
     <script type="text/javascript" src="/js/app.js"></script>
     <script type="text/javascript" src="/js/controllers/JobSearchController.js"></script>
+
+    <script>
+      $( document ).ready(function() {
+          // Load and execute the dynamic tracking code.
+          $.getScript("/js/tracking.js");
+      });
+    </script>
 
   </body>
 </html>

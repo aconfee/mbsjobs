@@ -10,6 +10,16 @@
 
     <h1>Admin Page</h1>
 
+    <!-- Accept tracking code -->
+    <div ng-controller="AdminController">
+      <h3>Tracking Code:</h3>
+      <p>{{ trackingMessage }}</p>
+      <textarea rows="8" cols="60" ng-model="trackingCode"></textarea>
+      <form ng-submit="addTrackingCode();" id="trackingForm">
+        <button type="submit">Add</button>
+      </form>
+    </div>
+
     <!-- Display search records -->
     <div ng-controller="JobSearchController">
       <h3>Search Records:</h3>
@@ -36,6 +46,7 @@
     <script src="/node_modules/angular-resource/angular-resource.js"></script>
     <script type="text/javascript" src="/js/app.js"></script>
     <script type="text/javascript" src="/js/controllers/JobSearchController.js"></script>
+    <script type="text/javascript" src="/js/controllers/AdminController.js"></script>
 
   </body>
 </html>

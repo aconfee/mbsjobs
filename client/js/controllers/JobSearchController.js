@@ -15,23 +15,10 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
   $scope.jobResults = [];
   $scope.zipcode; // used by form
   $scope.searchPhrase; // used by form
+  $scope.currentMousedownCode;
 
   // API with our server to send search records.
   var JobSearch = $resource("/api/jobsearch");
-
-  var emptyMockResult = {
-    "version" : 2,
-    "query" : "c++ developer",
-    "location" : "98004",
-    "dupefilter" : true,
-    "highlight" : true,
-    "radius" : 25,
-    "start" : 1,
-    "end" : 10,
-    "totalResults" : 865,
-    "pageNumber" : 0,
-    "results" : []
-  };
 
   var mockresult = {
       "version" : 2,
@@ -267,6 +254,8 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
       self.userAgent = result.userAgent;
 
       /// TEMPORARY HACK!!!!
+      if(mockresult.results.length > 0)
+        $scope.currentMousedownCode = mockresult.results[0].onmousedown;
       $scope.jobResults = mockresult.results;
       ///
 
@@ -389,6 +378,9 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", f
         }
       }).then(
         function(response) {
+          if(response.results.length > 0)
+            $scope.currentMousedownCode = response.results[0].onmousedown;
+
           successCb(response);
         },
         function(response) {

@@ -6,7 +6,8 @@ var express = require("express"),
     mongoose = require("mongoose"),
 
     // Server side controllers
-    JobSearchController = require("./server/controllers/JobSearchController");
+    JobSearchController = require("./server/controllers/JobSearchController"),
+    AdminController = require("./server/controllers/AdminController");
 
 // Initialize db
 mongoose.connect("mongodb://aconfee:password@ds011419.mlab.com:11419/mbsjobs");
@@ -30,6 +31,7 @@ app.use("/node_modules", express.static(__dirname + "/node_modules"));
 // REST API
 app.post("/api/jobsearch", JobSearchController.search);
 app.get("/api/jobsearch", JobSearchController.searchRecords);
+app.post("/api/tracking", AdminController.createTrackingCode);
 
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
