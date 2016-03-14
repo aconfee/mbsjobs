@@ -27,10 +27,10 @@
       <p>{{ searchMessage }}</p>
       <ul>
         <li ng-repeat="job in jobResults">
-          <h3><a ng-href="{{job.url}}" target="_blank">{{ job.jobtitle }}</a></h3>
-          <p>{{ currentMousedownCode }}</p>
+          <h3><a ng-mousedown="job.onmousedown" ng-href="{{job.url}}" target="_blank">{{ job.jobtitle }}</a></h3>
+          <p>{{ job.onmousedown }}</p>
           <p>{{ job.company }}</p>
-          <p>{{ job.snippet }}></p>
+          <p ng-bind-html="job.snippet"></p>
           <p>{{ job.formattedLocationFull }}</p>
           <p>{{ job.formattedRelativeTime }}</p>
         </li>
@@ -43,14 +43,15 @@
     </div>
 
     <div>
-    <span id=indeed_at><a href="http://www.indeed.com/">jobs</a> by <a href="http://www.indeed.com/" title="Job
+      <span id=indeed_at><a href="http://www.indeed.com/">jobs</a> by <a href="http://www.indeed.com/" title="Job
 Search"><img src="https://www.indeed.com/p/jobsearch.gif" style="border: 0; vertical-align: middle;" alt="Indeed job
 search"></a></span>
-  </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script type="text/javascript" src="/node_modules/angular/angular.js"></script>
     <script src="/node_modules/angular-resource/angular-resource.js"></script>
+    <script src="/node_modules/angular-sanitize/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="/js/app.js"></script>
     <script type="text/javascript" src="/js/controllers/JobSearchController.js"></script>
 

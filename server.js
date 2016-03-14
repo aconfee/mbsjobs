@@ -18,7 +18,6 @@ app.use(bodyParser());
 // Horribly basic authentication.
 var basicAuth = require('basic-auth');
 var myBasicAuth = function(username, password) {
-  console.log("super auth in action!");
   return function(req, res, next) {
     var user = basicAuth(req);
 
@@ -26,7 +25,6 @@ var myBasicAuth = function(username, password) {
       res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
       return res.send(401);
     }
-
     next();
   };
 };
