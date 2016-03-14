@@ -7,8 +7,8 @@ app_mbsjobs.controller("AdminController", ["$scope", "$http", function($scope, $
   ///
   $scope.addTrackingCode = function(){
     $http({
-      method: 'POST',
-      url: '/api/tracking',
+      method: "POST",
+      url: "/api/tracking",
       data: {
         trackingCode: $scope.trackingCode
       }
