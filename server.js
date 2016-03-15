@@ -14,6 +14,14 @@ mongoose.connect("mongodb://aconfee:password@ds011419.mlab.com:11419/mbsjobs");
 
 // Define middleware
 app.use(bodyParser());
+app.use(function(req, res, next) {
+  // Allow server to accept Indeed API.
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+  next();
+});
 
 // Horribly basic authentication.
 var basicAuth = require('basic-auth');
@@ -31,11 +39,11 @@ var myBasicAuth = function(username, password) {
 
 // Define page routes
 app.get("/", function(req, res){
-  res.sendfile(__dirname + "/client/views/index.html");
+  res.sendFile(__dirname + "/client/views/index.html");
 });
 
 app.get("/admin", myBasicAuth('adam', 'secret'), function(req, res){
-  res.sendfile(__dirname + "/client/views/admin.html");
+  res.sendFile(__dirname + "/client/views/admin.html");
 });
 
 // Define public static content to serve.

@@ -27,8 +27,7 @@
       <p>{{ searchMessage }}</p>
       <ul>
         <li ng-repeat="job in jobResults">
-          <h3><a ng-mousedown="job.onmousedown" ng-href="{{job.url}}" target="_blank">{{ job.jobtitle }}</a></h3>
-          <p>{{ job.onmousedown }}</p>
+          <h3 ng-bind-html="createJobLinkFromJob(job);"></h3>
           <p>{{ job.company }}</p>
           <p ng-bind-html="job.snippet"></p>
           <p>{{ job.formattedLocationFull }}</p>
@@ -59,6 +58,12 @@ search"></a></span>
       $( document ).ready(function() {
           // Load and execute the dynamic tracking code.
           $.getScript("/js/tracking.js");
+
+          $.get("http://api.indeed.com/ads/apisearch?chnl=FJR&format=json&l=98004&limit=10&publisher=2878037053725137&q=developer&start=0&useragent=Mozilla%2F5.0+(Windows+NT+10.0;+WOW64)+AppleWebKit%2F537.36+(KHTML,+like+Gecko)+Chrome%2F49.0.2623.87+Safari%2F537.36&userip=::1&v=2", function(data, status){
+            console.log("ajax sent");
+            console.log(status);
+            console.log(data);
+          });
       });
     </script>
 
