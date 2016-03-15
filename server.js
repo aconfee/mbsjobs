@@ -14,14 +14,12 @@ mongoose.connect("mongodb://aconfee:password@ds011419.mlab.com:11419/mbsjobs");
 
 // Define middleware
 app.use(bodyParser());
-app.use(function(req, res, next) {
-  // Allow server to accept Indeed API.
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 
+var logger = function(req, res, next){
+  console.log(req.url);
   next();
-});
+};
+//app.use(logger);
 
 // Horribly basic authentication.
 var basicAuth = require('basic-auth');

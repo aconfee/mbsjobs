@@ -1,4 +1,4 @@
-app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", "$sce", function($scope, $resource, $http, $sce){
+app_mbsjobs.controller("JobSearchController", ["$scope", "$http", "$sce", function($scope, $http, $sce){
 
   // 'Private' controller variables.
   var self = this;
@@ -16,9 +16,6 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", "
   $scope.zipcode; // used by form
   $scope.searchPhrase; // used by form
 
-  // API with our server to send search records.
-  var JobSearch = $resource("/api/jobsearch");
-
   ///
   /// Post a job search.
   ///
@@ -29,33 +26,34 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", "
     }
 
     // Save the search data.
-    var search = new JobSearch();
-    search.searchPhrase = $scope.searchPhrase;
-    search.zipcode = $scope.zipcode;
-    search.$save(function(result){
-      // Save ip and agent detected and returned from server.
-      self.userIp = result.ipAddress;
-      self.userAgent = result.userAgent;
+    $http.post("/api/jobsearch", {searchPhrase: $scope.searchPhrase, zipcode: $scope.zipcode})
+      // Query for jobs once we have ip and useragent info.
+      .then(function(response) {
+        // Save ip and agent detected and returned from server.
+        self.userIp = response.ipAddress;
+        self.userAgent = response.userAgent;
 
-      /// HACK HACK HACK USE MOCK DATA UNTIL API CALL IS FIXED.///
-      $scope.jobResults = mockresult.results;
-      ////////////////////////////////////////////////////////////
+        /// HACK HACK HACK USE MOCK DATA UNTIL API CALL IS FIXED.///
+        $scope.jobResults = mockresult.results;
+        ////////////////////////////////////////////////////////////
 
-      // Query Indeed for jobs.
-      self.queryJobs(
-        function(response){ // Success
-          if(response.results.length === 0){
-            $scope.searchMessage = "Sorry. No results found.";
-            return;
-          }
+        // Query Indeed for jobs.
+        self.queryJobs(
+          function(response){ // Success
+            if(response.results.length === 0){
+              $scope.searchMessage = "Sorry. No results found.";
+              return;
+            }
 
-          $scope.searchMessage = response.totalResults + " results found.";
-          $scope.jobResults = response.results;
-        },
-        function(response){ // Error
-          console.log("ERROR querying jobs in searchJobs.");
-      }); // query jobs
-    }); // save search data
+            $scope.searchMessage = response.totalResults + " results found.";
+            $scope.jobResults = response.results;
+          },
+          function(response){ // Error
+            console.log("ERROR querying jobs in searchJobs.");
+        }); // query jobs
+        }, function(response) {
+          console.log("ERROR getting search records.");
+    });
   }; // search jobs
 
   ///
@@ -149,12 +147,13 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", "
     }
 
     $http({
-      method: "GET",
+      method: "JSONP",
       url: "http://api.indeed.com/ads/apisearch",
       params: {
         publisher: "2878037053725137",
         v: "2",
         format: "json",
+        callback: "JSON_CALLBACK",
         userip: self.userIp,
         useragent: self.userAgent,
         l: $scope.zipcode,
@@ -168,6 +167,8 @@ app_mbsjobs.controller("JobSearchController", ["$scope", "$resource", "$http", "
       }
     }).then(
       function(response) {
+        console.log("Successful job search!");
+        console.log(response);
         successCb(response);
       },
       function(response) {

@@ -1,1 +1,1 @@
-console.log("No tracking code detected.");
+console.log("No tracking detected.");
